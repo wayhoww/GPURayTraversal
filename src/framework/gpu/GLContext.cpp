@@ -108,6 +108,7 @@ void GLContext::Program::use(void)
 
 GLuint GLContext::Program::createGLShader(GLenum type, const String& typeStr, const String& source)
 {
+
     GLuint shader = glCreateShader(type);
     const char* sourcePtr = source.getPtr();
     int sourceLen = source.getLength();
@@ -806,13 +807,14 @@ bool GLContext::choosePixelFormat(int& formatIdx, HDC hdc, const Config& config)
     reqs.add(Vec2i(WGL_SUPPORT_OPENGL_ARB,  1));
     reqs.add(Vec2i(WGL_DOUBLE_BUFFER_ARB,   1));
     reqs.add(Vec2i(WGL_PIXEL_TYPE_ARB,      WGL_TYPE_RGBA_ARB));
+    /*
     reqs.add(Vec2i(WGL_DEPTH_BITS_ARB,      24));
     reqs.add(Vec2i(WGL_STENCIL_BITS_ARB,    8));
     reqs.add(Vec2i(WGL_STEREO_ARB,          (config.isStereo) ? 1 : 0));
 
     if (config.numSamples > 1)
         reqs.add(Vec2i(WGL_SAMPLES_ARB, config.numSamples)); // WGL_ARB_multisample
-
+    */
     reqs.add(0);
 
     // Preferences.
@@ -832,8 +834,9 @@ bool GLContext::choosePixelFormat(int& formatIdx, HDC hdc, const Config& config)
     if (!GL_FUNC_AVAILABLE(wglChoosePixelFormatARB))
         fail("wglChoosePixelFormatARB() not available!");
 
+    int formatIndex2 = 0;
     UINT numFormats = 0;
-    if (!wglChoosePixelFormatARB(hdc, &reqs[0].x, NULL, 0, NULL, &numFormats))
+    if (!wglChoosePixelFormatARB(hdc, &reqs[0].x, NULL, 1, &formatIndex2, &numFormats))
         failWin32Error("wglChoosePixelFormatARB");
     if (numFormats == 0)
         return false;

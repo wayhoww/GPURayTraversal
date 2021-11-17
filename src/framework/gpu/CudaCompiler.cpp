@@ -405,7 +405,7 @@ void CudaCompiler::staticInit(void)
             break;
         }
     }
-
+    vsIncPath = String("C:\\Users\\VS2019\VC\\Tools\\MSVC\\14.29.30133\\include");
     if (!vsIncPath.getLength())
         fail("Unable to detect Visual Studio include path!\nPlease run VCVARS32.BAT.");
 
@@ -425,7 +425,8 @@ void CudaCompiler::staticInit(void)
     s_nvccCommand = sprintf("set PATH=%s;%s & nvcc.exe -ccbin \"%s\" -I\"%s\" -I\"%s\" -I. -D_CRT_SECURE_NO_DEPRECATE",
         cudaBinPath.getPtr(),
         pathEnv.getPtr(),
-        vsBinPath.getPtr(),
+        //vsBinPath.getPtr(),
+        "C:\\Users\\VS2019\\VC\\Tools\\MSVC\\14.29.30133\\bin\\Hostx86\\x86\\cl.exe",
         cudaIncPath.getPtr(),
         vsIncPath.getPtr());
 }
@@ -635,7 +636,7 @@ void CudaCompiler::runPreprocessor(String& cubinFile, String& finalOpts)
     // Preprocess.
 
     String logFile = m_cachePath + "\\preprocess.log";
-    String cmd = sprintf("%s -E -o \"%s\\preprocessed.cu\" -include \"%s\\defines.inl\" %s \"%s\" 2>>\"%s\"",
+    String cmd = sprintf("%s -E -o \"%s\\preprocessed.cu\" -include \"%s\\defines.inl\" %s \"%s\"",// 2 >> \"%s\"",
         s_nvccCommand.getPtr(),
         m_cachePath.getPtr(),
         m_cachePath.getPtr(),
@@ -644,7 +645,9 @@ void CudaCompiler::runPreprocessor(String& cubinFile, String& finalOpts)
         logFile.getPtr());
 
     initLogFile(logFile, cmd);
-    if (system(cmd.getPtr()) != 0)
+    int return_value = system("dir");
+    return_value = system(cmd.getPtr());
+    if (return_value != 0)
     {
         setLoggedError("CudaCompiler: Preprocessing failed!", logFile);
         return;
@@ -704,7 +707,8 @@ void CudaCompiler::runPreprocessor(String& cubinFile, String& finalOpts)
 void CudaCompiler::runCompiler(const String& cubinFile, const String& finalOpts)
 {
     String logFile = m_cachePath + "\\compile.log";
-    String cmd = sprintf("%s -o \"%s\" -include \"%s\\defines.inl\" %s \"%s\" 2>>\"%s\"",
+   // String nfinalOpts = " -cubin ";
+    String cmd = sprintf("%s -g -G -o \"%s\" -include \"%s\\defines.inl\" %s \"%s\" 2>>\"%s\"",
         s_nvccCommand.getPtr(),
         cubinFile.getPtr(),
         m_cachePath.getPtr(),

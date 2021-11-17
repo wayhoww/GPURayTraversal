@@ -220,7 +220,7 @@ bool RayGen::randomReflection (RayBuffer& orays, RayBuffer& irays, Scene& scene,
                     oray.direction.y = rnd.getF32();
                     oray.direction.z = rnd.getF32();
                     oray.direction.normalize();
-                } while(dot(oray.direction,normal)<0.f);
+                } while(dot(oray.direction, normal)<0.f);
 
                 oray.tmin       = 0.f;
                 oray.tmax       = maxDist;

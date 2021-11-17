@@ -36,7 +36,7 @@
 
     "Realtime ray tracing on GPU with BVH-based packet",
     Johannes Guenther, Stefan Popov, Hans-Peter Seidel and Philipp Slusallek,
-    Proc. IEEE/Eurographics Symposium on Interactive Ray Tracing 2007, 113–118.
+    Proc. IEEE/Eurographics Symposium on Interactive Ray Tracing 2007, 113?18.
 */
 
 #include "CudaTracerKernels.hpp"

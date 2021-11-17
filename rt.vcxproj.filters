@@ -95,6 +95,9 @@
     <ClInclude Include="src\rt\App.hpp" />
     <ClInclude Include="src\rt\Scene.hpp" />
     <ClInclude Include="src\rt\Util.hpp" />
+    <ClInclude Include="src\rt\kernels\kepler_dynamic_fetch.cu">
+      <Filter>kernels</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <CustomBuildStep Include="src\rt\cuda\RendererKernels.cu">
@@ -118,10 +121,5 @@
     <CustomBuildStep Include="src\rt\ray\RayGenKernels.cu">
       <Filter>ray</Filter>
     </CustomBuildStep>
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="src\rt\kernels\kepler_dynamic_fetch.cu">
-      <Filter>kernels</Filter>
-    </None>
   </ItemGroup>
 </Project>
