@@ -636,7 +636,7 @@ void CudaCompiler::runPreprocessor(String& cubinFile, String& finalOpts)
     // Preprocess.
 
     String logFile = m_cachePath + "\\preprocess.log";
-    String cmd = sprintf("%s -E -o \"%s\\preprocessed.cu\" -include \"%s\\defines.inl\" %s \"%s\"",// 2 >> \"%s\"",
+    String cmd = sprintf("%s -E -o \"%s\\preprocessed.cu\" -include \"%s\\defines.inl\" %s \"%s\" 2>>\"%s\"",
         s_nvccCommand.getPtr(),
         m_cachePath.getPtr(),
         m_cachePath.getPtr(),
@@ -645,9 +645,7 @@ void CudaCompiler::runPreprocessor(String& cubinFile, String& finalOpts)
         logFile.getPtr());
 
     initLogFile(logFile, cmd);
-    int return_value = system("dir");
-    return_value = system(cmd.getPtr());
-    if (return_value != 0)
+    if (system(cmd.getPtr()) != 0)
     {
         setLoggedError("CudaCompiler: Preprocessing failed!", logFile);
         return;
@@ -707,8 +705,7 @@ void CudaCompiler::runPreprocessor(String& cubinFile, String& finalOpts)
 void CudaCompiler::runCompiler(const String& cubinFile, const String& finalOpts)
 {
     String logFile = m_cachePath + "\\compile.log";
-   // String nfinalOpts = " -cubin ";
-    String cmd = sprintf("%s -g -G -o \"%s\" -include \"%s\\defines.inl\" %s \"%s\" 2>>\"%s\"",
+    String cmd = sprintf("%s -o \"%s\" -include \"%s\\defines.inl\" %s \"%s\" 2>>\"%s\"",
         s_nvccCommand.getPtr(),
         cubinFile.getPtr(),
         m_cachePath.getPtr(),
