@@ -833,7 +833,8 @@ bool GLContext::choosePixelFormat(int& formatIdx, HDC hdc, const Config& config)
         fail("wglChoosePixelFormatARB() not available!");
 
     UINT numFormats = 0;
-    if (!wglChoosePixelFormatARB(hdc, &reqs[0].x, NULL, 0, NULL, &numFormats))
+    int formatIndex = 0;
+    if (!wglChoosePixelFormatARB(hdc, &reqs[0].x, NULL, 1, &formatIdx, &numFormats))
         failWin32Error("wglChoosePixelFormatARB");
     if (numFormats == 0)
         return false;
