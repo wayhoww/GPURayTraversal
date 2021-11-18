@@ -272,22 +272,26 @@ void CudaCompiler::staticInit(void)
 
     // List potential CUDA and Visual Studio paths.
 
-	F32 driverVersion = CudaModule::getDriverVersion() / 10.0f;
+    F32 driverVersion = CudaModule::getDriverVersion() / 10.0f;
     Array<String> potentialCudaPaths;
     Array<String> potentialVSPaths;
 
-	for (char drive = 'C'; drive <= 'E'; drive++)
+    for (char drive = 'C'; drive <= 'E'; drive++)
     {
         for (int progX86 = 0; progX86 <= 1; progX86++)
         {
             String prog = sprintf("%c:\\%s", drive, (progX86 == 0) ? "Program Files" : "Program Files (x86)");
-		    potentialCudaPaths.add(prog + sprintf("\\NVIDIA GPU Computing Toolkit\\CUDA\\v%.1f", driverVersion));
-            potentialVSPaths.add(prog + "\\Microsoft Visual Studio 10.0");
-            potentialVSPaths.add(prog + "\\Microsoft Visual Studio 9.0");
-            potentialVSPaths.add(prog + "\\Microsoft Visual Studio 8");
+            potentialCudaPaths.add(prog + sprintf("\\NVIDIA GPU Computing Toolkit\\CUDA\\v%.1f", driverVersion));
+            
+            const char* editions[] = {"Community", "Professional", "Enterprise"};
+            for (int i = 0; i < sizeof(editions) / sizeof(*editions); i++) {
+                potentialVSPaths.add(prog + "\\Microsoft Visual Studio\\2019\\" + editions[i] + "\\");
+                potentialVSPaths.add(prog + "\\Microsoft Visual Studio\\2022\\" + editions[i] + "\\");
+            }
         }
-		potentialCudaPaths.add(sprintf("%c:\\CUDA", drive));
+        potentialCudaPaths.add(sprintf("%c:\\CUDA", drive));
     }
+    potentialCudaPaths.add(queryEnv("CUDA_PATH"));
 
     // Query environment variables.
 
@@ -352,19 +356,14 @@ void CudaCompiler::staticInit(void)
     splitPathList(vsBinList, pathEnv);
     for (int i = 0; i < potentialVSPaths.getSize(); i++)
         vsBinList.add(potentialVSPaths[i] + "\\VC\\bin");
+#ifdef FW_64
+    String vsBinPath = queryEnv("MSVC_PATH") + "\\bin\\Hostx64\\x64\\cl.exe";
+#else
+    String vsBinPath = queryEnv("MSVC_PATH") + "\\bin\\Hostx86\\x86\\cl.exe";
+#endif
 
-    String vsBinPath;
-    for (int i = 0; i < vsBinList.getSize(); i++)
-    {
-        if (vsBinList[i].getLength() && fileExists(vsBinList[i] + "\\vcvars32.bat"))
-        {
-            vsBinPath = vsBinList[i];
-            break;
-        }
-    }
-
-    if (!vsBinPath.getLength())
-        fail("Unable to detect Visual Studio binary path!\nPlease run VCVARS32.BAT.");
+    if (!(vsBinPath.getLength() && fileExists(vsBinPath)))
+        fail("Unable to detect Visual Studio binary path!\nPlease set MSVC_PATH.");
 
     // Find CUDA include path.
 
@@ -390,24 +389,9 @@ void CudaCompiler::staticInit(void)
 
     // Find Visual Studio include path.
 
-    Array<String> vsIncList;
-    vsIncList.add(vsBinPath + "\\..\\INCLUDE");
-    splitPathList(vsIncList, includeEnv);
-    for (int i = 0; i < potentialVSPaths.getSize(); i++)
-        vsIncList.add(potentialVSPaths[i] + "\\VC\\INCLUDE");
-
-    String vsIncPath;
-    for (int i = 0; i < vsIncList.getSize(); i++)
-    {
-        if (vsIncList[i].getLength() && fileExists(vsIncList[i] + "\\crtdefs.h"))
-        {
-            vsIncPath = vsIncList[i];
-            break;
-        }
-    }
-    vsIncPath = String("C:\\Users\\VS2019\VC\\Tools\\MSVC\\14.29.30133\\include");
-    if (!vsIncPath.getLength())
-        fail("Unable to detect Visual Studio include path!\nPlease run VCVARS32.BAT.");
+    String vsIncPath = queryEnv("MSVC_PATH") + "\\include";
+    if (!(vsIncPath.getLength() && fileExists(vsIncPath + "\\crtdefs.h")))
+        fail("Unable to detect Visual Studio include path!\nPlease set MSVC_PATH.");
 
     // Show paths.
 
@@ -421,12 +405,17 @@ void CudaCompiler::staticInit(void)
 #endif
 
     // Form NVCC command line.
-
-    s_nvccCommand = sprintf("set PATH=%s;%s & nvcc.exe -g -G -ccbin \"%s\" -I\"%s\" -I\"%s\" -I. -D_CRT_SECURE_NO_DEPRECATE",
+    
+    s_nvccCommand = 
+        sprintf(
+#ifdef _DEBUG
+            "set PATH=%s;%s & nvcc.exe -g -G -ccbin \"%s\" -I\"%s\" -I\"%s\" -I. -D_CRT_SECURE_NO_DEPRECATE",
+#else 
+            "set PATH=%s;%s & nvcc.exe -g -G -ccbin \"%s\" -I\"%s\" -I\"%s\" -I. -D_CRT_SECURE_NO_DEPRECATE",
+#endif
         cudaBinPath.getPtr(),
         pathEnv.getPtr(),
-        //vsBinPath.getPtr(),
-        "C:\\Users\\VS2019\\VC\\Tools\\MSVC\\14.29.30133\\bin\\Hostx64\\x64\\cl.exe",
+        vsBinPath.getPtr(),
         cudaIncPath.getPtr(),
         vsIncPath.getPtr());
 }
