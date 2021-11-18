@@ -422,11 +422,11 @@ void CudaCompiler::staticInit(void)
 
     // Form NVCC command line.
 
-    s_nvccCommand = sprintf("set PATH=%s;%s & nvcc.exe -ccbin \"%s\" -I\"%s\" -I\"%s\" -I. -D_CRT_SECURE_NO_DEPRECATE",
+    s_nvccCommand = sprintf("set PATH=%s;%s & nvcc.exe -g -G -ccbin \"%s\" -I\"%s\" -I\"%s\" -I. -D_CRT_SECURE_NO_DEPRECATE",
         cudaBinPath.getPtr(),
         pathEnv.getPtr(),
         //vsBinPath.getPtr(),
-        "C:\\Users\\VS2019\\VC\\Tools\\MSVC\\14.29.30133\\bin\\Hostx86\\x86\\cl.exe",
+        "C:\\Users\\VS2019\\VC\\Tools\\MSVC\\14.29.30133\\bin\\Hostx64\\x64\\cl.exe",
         cudaIncPath.getPtr(),
         vsIncPath.getPtr());
 }
