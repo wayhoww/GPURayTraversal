@@ -26,6 +26,7 @@
  */
 
 #include "ray/RayBufferKernels.hpp"
+#include <device_launch_parameters.h>
 
 using namespace FW;
 

@@ -27,6 +27,7 @@
 
 #pragma once
 #include <cuda.h>
+#include <device_launch_parameters.h>
 
 //------------------------------------------------------------------------
 // Constants.

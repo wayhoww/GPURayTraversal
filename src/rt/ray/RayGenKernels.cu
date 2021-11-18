@@ -25,6 +25,7 @@
  *  SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
+#include <device_launch_parameters.h>
 #include "ray/RayGenKernels.hpp"
 
 using namespace FW;
