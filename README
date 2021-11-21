@@ -1,6 +1,10 @@
 I (wweihao@outlook.com) have made some editing 
 so that this project can run on Visual Studio 2019 and Visual Studio 2022.
 
+Prerequisite Environment Variables:
+CUDA_PATH: some path like `C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v11.5`
+MSVC_PATH: some path like `C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Tools\MSVC\14.30.30705`
+
 It seems that `tesla_persistent_while_while.cu` is the only working kernel on RTX 3090 (sm_86).
 --------------------------
 
