@@ -1,5 +1,7 @@
 I (wweihao@outlook.com) have made some editing 
 so that this project can run on Visual Studio 2019 and Visual Studio 2022.
+
+It seems that `tesla_persistent_while_while.cu` is the only working kernel on RTX 3090 (sm_86).
 --------------------------
 
 Fast GPU Ray Traversal 1.4
